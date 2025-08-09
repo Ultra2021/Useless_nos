@@ -6,7 +6,7 @@ Of course\! Here is the completed project file based on the Python program you p
 
 ## Basic Details
 
-### Team Name: [Useless]
+### Team Name: Useless
 
 ### Team Members
 
