@@ -2,7 +2,7 @@ Of course\! Here is the completed project file based on the Python program you p
 
 -----
 
-# [Kurukku] 🎯
+# Kurukku 🎯
 
 ## Basic Details
 
@@ -10,8 +10,8 @@ Of course\! Here is the completed project file based on the Python program you p
 
 ### Team Members
 
-  - Team Lead: [Noel Biju] - [Sahrdaya College of Engineering]
-  - Member 2: [Samuel Thomas C] - [Sahrdaya College of Engineering]
+  - Team Lead: Noel Biju - Sahrdaya College of Engineering
+  - Member 2: Samuel Thomas C - Sahrdaya College of Engineering
 
 ### Project Description
 
@@ -86,30 +86,13 @@ https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sha
 *A demonstration of different fake cursor shapes ("square" and "cross") selected from the control panel.*
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
 # Diagrams
-
+https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
 *This diagram shows the multi-threaded architecture. The main thread handles the Tkinter GUI and light effects, while a separate worker thread runs the intensive chaotic mouse movement logic. Both threads communicate via a shared `AppState` object.*
 
-For Hardware:
-
-# Schematic & Circuit
-
-*Not applicable, as this is a software-only project.*
-
-*Not applicable, as this is a software-only project.*
-
-# Build Photos
-
-*Not applicable, as this is a software-only project.*
-
-*Not applicable, as this is a software-only project.*
-
-*Not applicable, as this is a software-only project.*
-
-### Project Demo
 
 # Video
 
-[https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing]
+https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
 *The video demonstrates the application being launched. It shows the control panel appearing, and the mouse cursor immediately beginning its chaotic movement, followed by the swarm of fake cursors. The video then shows a user adjusting the sliders and radio buttons on the control panel, demonstrating the real-time changes in effect intensity, cursor count, and shape.*
 
 # Additional Demos
