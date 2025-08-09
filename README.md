@@ -97,6 +97,7 @@ https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sha
 # Video
 
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
+
 *The video demonstrates the application being launched. It shows the control panel appearing, and the mouse cursor immediately beginning its chaotic movement, followed by the swarm of fake cursors. The video then shows a user adjusting the sliders and radio buttons on the control panel, demonstrating the real-time changes in effect intensity, cursor count, and shape.*
 
 # Additional Demos
