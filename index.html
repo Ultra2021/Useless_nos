@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic Mouse - Web Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* The main container where the effect takes place */
+        #chaotic-area {
+            width: 100vw;
+            height: 100vh;
+            background-color: #111827; /* bg-gray-900 */
+            cursor: none; /* Hide the real cursor */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Base style for all cursors (real and fake) */
+        .cursor {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            pointer-events: none; /* Cursors shouldn't interfere with mouse events */
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* Specific shapes */
+        .cursor.square {
+            border-radius: 0;
+        }
+        .cursor.cross {
+            background-color: transparent;
+            width: 12px;
+            height: 12px;
+        }
+        .cursor.cross::before, .cursor.cross::after {
+            content: '';
+            position: absolute;
+            background-color: white;
+        }
+        .cursor.cross::before { /* Horizontal bar */
+            left: 0;
+            top: 5px;
+            width: 100%;
+            height: 2px;
+        }
+        .cursor.cross::after { /* Vertical bar */
+            left: 5px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+    <!-- The main area for the mouse effects -->
+    <div id="chaotic-area"></div>
+
+    <!-- The Control Panel -->
+    <div id="control-panel" class="fixed top-4 left-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm p-6 rounded-lg shadow-2xl w-80">
+        <h2 class="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Control Panel</h2>
+        
+        <div class="space-y-4">
+            <!-- Toggles -->
+            <label class="flex items-center justify-between">
+                <span>Pause All Effects</span>
+                <input type="checkbox" id="pause-toggle" class="form-checkbox h-5 w-5 text-blue-500 rounded">
+            </label>
+            <label class="flex items-center justify-between">
+                <span>Enable Chaotic Movement</span>
+                <input type="checkbox" id="chaotic-toggle" class="form-checkbox h-5 w-5 text-blue-500 rounded" checked>
+            </label>
+            <label class="flex items-center justify-between">
+                <span>Enable Flickering</span>
+                <input type="checkbox" id="flicker-toggle" class="form-checkbox h-5 w-5 text-blue-500 rounded" checked>
+            </label>
+
+            <!-- Sliders -->
+            <div class="space-y-2">
+                <label for="num-cursors-slider">Number of Fake Cursors: <span id="num-cursors-value">5</span></label>
+                <input type="range" id="num-cursors-slider" min="0" max="25" value="5" class="w-full">
+            </div>
+            <div class="space-y-2">
+                <label for="flicker-intensity-slider">Flicker Intensity: <span id="flicker-intensity-value">5</span></label>
+                <input type="range" id="flicker-intensity-slider" min="1" max="20" value="5" class="w-full">
+            </div>
+            <div class="space-y-2">
+                <label for="speed-threshold-slider">Speed Threshold for Flicker: <span id="speed-threshold-value">15</span></label>
+                <input type="range" id="speed-threshold-slider" min="1" max="50" value="15" class="w-full">
+            </div>
+
+            <!-- Radio Buttons -->
+            <div>
+                <label class="block mb-2">Fake Cursor Shape:</label>
+                <div class="flex justify-around">
+                    <label><input type="radio" name="shape" value="dot" checked> Dot</label>
+                    <label><input type="radio" name="shape" value="square"> Square</label>
+                    <label><input type="radio" name="shape" value="cross"> Cross</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chaoticArea = document.getElementById('chaotic-area');
+
+            // --- State Management ---
+            const state = {
+                paused: false,
+                chaoticEnabled: true,
+                flickerEnabled: true,
+                numCursors: 5,
+                flickerIntensity: 5,
+                speedThreshold: 15,
+                shape: 'dot',
+                mouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+                lastMouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+                isControlPanelFocused: false,
+            };
+
+            // --- Cursor Elements ---
+            let mainCursor;
+            let fakeCursors = [];
+
+            function createMainCursor() {
+                mainCursor = document.createElement('div');
+                mainCursor.id = 'main-cursor';
+                mainCursor.className = `cursor ${state.shape}`;
+                chaoticArea.appendChild(mainCursor);
+            }
+
+            function updateFakeCursors() {
+                // Remove excess cursors
+                while (fakeCursors.length > state.numCursors) {
+                    const cursorToRemove = fakeCursors.pop();
+                    cursorToRemove.remove();
+                }
+                // Add new cursors
+                while (fakeCursors.length < state.numCursors) {
+                    const cursor = document.createElement('div');
+                    cursor.className = `cursor ${state.shape}`;
+                    // Start at a random position
+                    cursor.style.left = `${Math.random() * window.innerWidth}px`;
+                    cursor.style.top = `${Math.random() * window.innerHeight}px`;
+                    chaoticArea.appendChild(cursor);
+                    fakeCursors.push(cursor);
+                }
+            }
+            
+            function updateCursorShapes() {
+                mainCursor.className = `cursor ${state.shape}`;
+                fakeCursors.forEach(c => c.className = `cursor ${state.shape}`);
+            }
+
+            // --- Control Panel Logic ---
+            const controlPanel = document.getElementById('control-panel');
+            controlPanel.addEventListener('mouseenter', () => state.isControlPanelFocused = true);
+            controlPanel.addEventListener('mouseleave', () => state.isControlPanelFocused = false);
+
+            const ui = {
+                pauseToggle: document.getElementById('pause-toggle'),
+                chaoticToggle: document.getElementById('chaotic-toggle'),
+                flickerToggle: document.getElementById('flicker-toggle'),
+                numCursorsSlider: document.getElementById('num-cursors-slider'),
+                numCursorsValue: document.getElementById('num-cursors-value'),
+                flickerIntensitySlider: document.getElementById('flicker-intensity-slider'),
+                flickerIntensityValue: document.getElementById('flicker-intensity-value'),
+                speedThresholdSlider: document.getElementById('speed-threshold-slider'),
+                speedThresholdValue: document.getElementById('speed-threshold-value'),
+                shapeRadios: document.querySelectorAll('input[name="shape"]'),
+            };
+
+            ui.pauseToggle.addEventListener('change', (e) => state.paused = e.target.checked);
+            ui.chaoticToggle.addEventListener('change', (e) => state.chaoticEnabled = e.target.checked);
+            ui.flickerToggle.addEventListener('change', (e) => state.flickerEnabled = e.target.checked);
+            
+            ui.numCursorsSlider.addEventListener('input', (e) => {
+                state.numCursors = parseInt(e.target.value);
+                ui.numCursorsValue.textContent = state.numCursors;
+                updateFakeCursors();
+            });
+            ui.flickerIntensitySlider.addEventListener('input', (e) => {
+                state.flickerIntensity = parseInt(e.target.value);
+                ui.flickerIntensityValue.textContent = state.flickerIntensity;
+            });
+            ui.speedThresholdSlider.addEventListener('input', (e) => {
+                state.speedThreshold = parseInt(e.target.value);
+                ui.speedThresholdValue.textContent = state.speedThreshold;
+            });
+            
+            ui.shapeRadios.forEach(radio => radio.addEventListener('change', (e) => {
+                state.shape = e.target.value;
+                updateCursorShapes();
+            }));
+
+            // --- Mouse Tracking ---
+            window.addEventListener('mousemove', (e) => {
+                if (!state.isControlPanelFocused) {
+                    state.mouse.x = e.clientX;
+                    state.mouse.y = e.clientY;
+                }
+            });
+
+            // --- Effect Logic ---
+            let chaoticTarget = { x: state.mouse.x, y: state.mouse.y };
+            let lastChaoticMove = 0;
+
+            function chaoticMovement(timestamp) {
+                if (!state.chaoticEnabled) {
+                    chaoticTarget.x = state.mouse.x;
+                    chaoticTarget.y = state.mouse.y;
+                    return;
+                }
+                
+                // Decide when to get a new target
+                if (timestamp - lastChaoticMove > Math.random() * 1200 + 50) {
+                    lastChaoticMove = timestamp;
+                    const isBigJump = Math.random() < 0.15;
+                    if (isBigJump) {
+                        chaoticTarget.x = Math.random() * window.innerWidth;
+                        chaoticTarget.y = Math.random() * window.innerHeight;
+                    } else {
+                        chaoticTarget.x = state.mouse.x + (Math.random() - 0.5) * 300;
+                        chaoticTarget.y = state.mouse.y + (Math.random() - 0.5) * 300;
+                    }
+                }
+                
+                // Apply jitter
+                if (Math.random() < 0.25) {
+                    mainCursor.style.transform = `translate(${chaoticTarget.x}px, ${chaoticTarget.y}px) translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px)`;
+                } else {
+                    mainCursor.style.transform = `translate(${chaoticTarget.x}px, ${chaoticTarget.y}px)`;
+                }
+            }
+
+            function flickerEffect() {
+                if (!state.flickerEnabled) return;
+                
+                const dist = Math.hypot(state.mouse.x - state.lastMouse.x, state.mouse.y - state.lastMouse.y);
+
+                if (dist > state.speedThreshold) {
+                    const offsetX = (Math.random() - 0.5) * state.flickerIntensity;
+                    const offsetY = (Math.random() - 0.5) * state.flickerIntensity;
+                    mainCursor.style.transform += ` translate(${offsetX}px, ${offsetY}px)`;
+                }
+            }
+
+            function moveFakeCursors() {
+                fakeCursors.forEach(cursor => {
+                    const currentX = parseFloat(cursor.style.left || 0);
+                    const currentY = parseFloat(cursor.style.top || 0);
+                    
+                    const targetX = chaoticTarget.x + (Math.random() - 0.5) * 300;
+                    const targetY = chaoticTarget.y + (Math.random() - 0.5) * 300;
+
+                    // Move towards the target
+                    const newX = currentX + (targetX - currentX) * 0.05;
+                    const newY = currentY + (targetY - currentY) * 0.05;
+
+                    cursor.style.left = `${newX}px`;
+                    cursor.style.top = `${newY}px`;
+                });
+            }
+
+
+            // --- Main Animation Loop ---
+            function animate(timestamp) {
+                if (!state.paused && !state.isControlPanelFocused) {
+                    chaoticMovement(timestamp);
+                    flickerEffect();
+                    moveFakeCursors();
+                } else {
+                    // If paused, just move the main cursor to the real mouse position
+                    mainCursor.style.transform = `translate(${state.mouse.x}px, ${state.mouse.y}px)`;
+                }
+                
+                state.lastMouse.x = state.mouse.x;
+                state.lastMouse.y = state.mouse.y;
+
+                requestAnimationFrame(animate);
+            }
+
+            // --- Initialization ---
+            createMainCursor();
+            updateFakeCursors();
+            requestAnimationFrame(animate);
+        });
+    </script>
+</body>
+</html>
