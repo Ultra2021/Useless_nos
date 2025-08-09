@@ -81,12 +81,16 @@ For Software:
 
 *The control panel is shown open on the desktop, allowing real-time adjustment of the chaotic effects.*
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
+
 *The main chaotic effect in action, with the real cursor surrounded by a swarm of fake "dot" cursors.*
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
+
 *A demonstration of different fake cursor shapes ("square" and "cross") selected from the control panel.*
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
+
 # Diagrams
 https://drive.google.com/drive/folders/1MOx0xv4WqFznQlqFsiBARDJ5HF257Ty5?usp=sharing
+
 *This diagram shows the multi-threaded architecture. The main thread handles the Tkinter GUI and light effects, while a separate worker thread runs the intensive chaotic mouse movement logic. Both threads communicate via a shared `AppState` object.*
 
 
